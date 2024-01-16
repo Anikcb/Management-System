@@ -10,9 +10,11 @@ namespace ManagementSystem.Controllers
     [ApiController]
     public class StudentsController : ControllerBase
     {
+        private readonly RedisService _redisService;
         private readonly StudentService _studentService;
-        public StudentsController(StudentService studentService)
+        public StudentsController(RedisService redisService, StudentService studentService)
         {
+            _redisService = redisService;
             _studentService = studentService;
         }
 
@@ -27,7 +29,16 @@ namespace ManagementSystem.Controllers
         [HttpGet("{index}")]
         public async Task<List<Student>> Get(int index)
         {
-            return await _studentService.GetAsync(index*5);
+            string id = index.ToString();
+            var cachedData = _redisService.GetKey<List<Student>>(id);
+            if (cachedData != null)
+            {
+                return cachedData;
+            }
+            var mongoData = await _studentService.GetAsync(index*5);
+           _redisService.SetKey(id, mongoData);
+
+            return mongoData;
         }
 
         // POST api/<StudentsController>

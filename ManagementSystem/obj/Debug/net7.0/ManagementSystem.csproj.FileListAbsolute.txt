@@ -14,8 +14,10 @@ F:\Office\ManagementSystem\ManagementSystem\bin\Debug\net7.0\MongoDB.Bson.dll
 F:\Office\ManagementSystem\ManagementSystem\bin\Debug\net7.0\MongoDB.Driver.dll
 F:\Office\ManagementSystem\ManagementSystem\bin\Debug\net7.0\MongoDB.Driver.Core.dll
 F:\Office\ManagementSystem\ManagementSystem\bin\Debug\net7.0\MongoDB.Libmongocrypt.dll
+F:\Office\ManagementSystem\ManagementSystem\bin\Debug\net7.0\Pipelines.Sockets.Unofficial.dll
 F:\Office\ManagementSystem\ManagementSystem\bin\Debug\net7.0\SharpCompress.dll
 F:\Office\ManagementSystem\ManagementSystem\bin\Debug\net7.0\Snappier.dll
+F:\Office\ManagementSystem\ManagementSystem\bin\Debug\net7.0\StackExchange.Redis.dll
 F:\Office\ManagementSystem\ManagementSystem\bin\Debug\net7.0\Swashbuckle.AspNetCore.Swagger.dll
 F:\Office\ManagementSystem\ManagementSystem\bin\Debug\net7.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 F:\Office\ManagementSystem\ManagementSystem\bin\Debug\net7.0\Swashbuckle.AspNetCore.SwaggerUI.dll
