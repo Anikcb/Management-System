@@ -2,8 +2,6 @@
 using ManagementSystem.Services;
 using Microsoft.AspNetCore.Mvc;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace ManagementSystem.Controllers
 {
     [Route("api/[controller]")]
@@ -20,60 +18,108 @@ namespace ManagementSystem.Controllers
 
         // GET: api/<StudentsController>
         [HttpGet]
-        public async Task<List<Student>> Get()
+        public async Task<IActionResult> Get()
         {
-            return await _studentService.GetAsync();
+            try
+            {
+                var students = await _studentService.GetAsync();
+                return Ok(students);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error in Get(): {ex.Message}");
+                return StatusCode(500, "Internal Server Error");
+            }
         }
 
         // GET api/<StudentsController>/5
         [HttpGet("{index}")]
-        public async Task<List<Student>> Get(int index)
+        public async Task<IActionResult> Get(int index)
         {
-            string id = index.ToString();
-            var cachedData = _redisService.GetKey<List<Student>>(id);
-            if (cachedData != null)
+            try
             {
-                return cachedData;
-            }
-            var mongoData = await _studentService.GetAsync(index*5);
-           _redisService.SetKey(id, mongoData);
+                string id = index.ToString();
+                var cachedData = _redisService.GetKey<List<Student>>(id);
+                if (cachedData != null)
+                {
+                    return Ok(cachedData);
+                }
 
-            return mongoData;
+                var mongoData = await _studentService.GetAsync(index * 5);
+                if(mongoData.Count == 0)
+                {
+                    return NotFound($"Student List is Missing");
+                }
+
+                _redisService.SetKey(id, mongoData);
+                return Ok(mongoData);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error in Get(int index): {ex.Message}");
+                return StatusCode(500, "Internal Server Error");
+            }
         }
 
         // POST api/<StudentsController>
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Student newStudent)
         {
-            await _studentService.CreateAsync(newStudent);
-            return CreatedAtAction(nameof(Get), new { id = newStudent.Id }, newStudent);
+            try
+            {
+                await _studentService.CreateAsync(newStudent);
+                return CreatedAtAction(nameof(Get), new { id = newStudent.Id }, newStudent);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error in Post(): {ex.Message}");
+                return StatusCode(500, "Internal Server Error");
+            }
         }
 
         // PUT api/<StudentsController>/5
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(string id, [FromBody] Student updateStudent)
         {
-            var student = await _studentService.GetAsync(id);
-            if (student is null)
+            try
             {
-                return NotFound($"Student Id {id} is Missing");
+                var student = await _studentService.GetAsync(id);
+                if (student is null)
+                {
+                    return NotFound($"Student Id {id} is Missing");
+                }
+
+                updateStudent.Id = id;
+                await _studentService.UpdateAsync(id, updateStudent);
+                return NoContent();
             }
-            updateStudent.Id = id;
-            await _studentService.UpdateAsync(id, updateStudent);
-            return NoContent();
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error in Put(string id): {ex.Message}");
+                return StatusCode(500, "Internal Server Error");
+            }
         }
 
         // DELETE api/<StudentsController>/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-            var student = await _studentService.GetAsync(id);
-            if (student is null)
+            try
             {
-                return NotFound($"Student Id {id} is Missing");
+                var student = await _studentService.GetAsync(id);
+                if (student is null)
+                {
+                    return NotFound($"Student Id {id} is Missing");
+                }
+
+                await _studentService.RemoveAsync(id);
+                return NoContent();
             }
-            await _studentService.RemoveAsync(id);
-            return NoContent();
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error in Delete(string id): {ex.Message}");
+                return StatusCode(500, "Internal Server Error");
+            }
         }
     }
 }

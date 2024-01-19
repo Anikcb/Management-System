@@ -4,7 +4,7 @@ using MongoDB.Driver;
 
 namespace ManagementSystem.Services
 {
-    public class StudentService
+    public class StudentService : IStudentService
     {
         private readonly IMongoCollection<Student> _studentCollection;
 
